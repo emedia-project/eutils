@@ -3,7 +3,8 @@
 -export([
   is_keylist/1,
   merge_keylists/3,
-  identical/2
+  identical/2,
+  include/2
   ]).
 
 %% @doc
@@ -42,3 +43,9 @@ merge_keylists(N, [Tuple|Rest], TupleList2) when
 %% @end
 identical(List1, List2) when is_list(List1), is_list(List2) ->
   lists:sort(List1) =:= lists:sort(List2).
+
+%% @doc
+%% Return true if E is in List
+%% @end
+include(List, E) when is_list(List) ->
+  lists:any(fun(Elem) -> Elem =:= E end, List).
