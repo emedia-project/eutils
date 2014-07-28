@@ -14,14 +14,14 @@
 %%
 %% Example:
 %% <pre>
-%% {"hello" "world, I love you"} = estring:split_first("hello, world, I love you", ", ")
+%% {"hello" " world, I love you"} = estring:split_first("hello, world, I love you", ",")
 %% </pre>
 %% @doc
 split_first(String, Token) ->
   split_first(String, Token, {[], []}).
 split_first([], _, R) -> R;
 split_first([C|Rest], Token, {A, B}) ->
-  case elist:include(C, Token) of
+  case elist:include(Token, C) of
     true -> {A, Rest};
     false -> split_first(Rest, Token, {A ++ [C], B})
   end.
