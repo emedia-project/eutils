@@ -3,7 +3,9 @@
 -export([
   expand_path/1,
   normalize_path/1,
-  user_home/0
+  user_home/0,
+  make_dir/1,
+  remove_recursive/1
   ]).
 
 %% @doc
@@ -65,7 +67,29 @@ user_home() ->
     _ -> get_unix_home()
   end.
 
+%% @doc
+%% Create the given directory if it not exist
+%% @end
+make_dir(Path) ->
+  filelib:ensure_dir(filename:join([Path, "."])).
+
+%% @doc
+%% Remove, recursively the given path
+%% @end
+remove_recursive(Path) ->
+  case filelib:is_dir(Path) of
+    false ->
+      file:delete(Path);
+    true ->
+      lists:foreach(fun remove_recursive/1, sub_files(Path)),
+      file:del_dir(Path)
+  end.
+
 %% Private
+
+sub_files(From) ->
+  {ok, SubFiles} = file:list_dir(From),
+  [filename:join(From, SubFile) || SubFile <- SubFiles].
 
 expand_home([$~|Rest]) ->
   user_home() ++ Rest;

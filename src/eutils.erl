@@ -2,7 +2,8 @@
 
 -export([
   to_atom/1,
-  to_list/1
+  to_list/1,
+  module_exist/1
   ]).
 
 %% @doc
@@ -50,3 +51,20 @@ to_list(true) ->
   "true";
 to_list(false) ->
   "false".
+
+%% @doc
+%% Check if the given module exist
+%% @end
+module_exist(Module) ->
+  case is_atom(Module) of
+    true ->
+      try Module:module_info() of
+        _InfoList ->
+          true
+      catch
+        _:_ ->
+          false
+      end;
+    false ->
+      false
+  end.
