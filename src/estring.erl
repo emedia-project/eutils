@@ -21,7 +21,7 @@ split_first(String, Token) ->
   split_first(String, Token, {[], []}).
 split_first([], _, R) -> R;
 split_first([C|Rest], Token, {A, B}) ->
-  case elist:include(Token, C) of
+  case elists:include(Token, C) of
     true -> {A, Rest};
     false -> split_first(Rest, Token, {A ++ [C], B})
   end.
