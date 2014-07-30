@@ -3,7 +3,9 @@
 -export([
   to_atom/1,
   to_list/1,
-  module_exist/1
+  to_binary/1,
+  module_exist/1,
+  is_string/1
   ]).
 
 %% @doc
@@ -53,6 +55,25 @@ to_list(false) ->
   "false".
 
 %% @doc
+%% Convert the given term to binary
+%%
+%% Example:
+%% <pre>
+%% &lt;&lt;"list"&gt;&gt; = eutils:to_binary(list).
+%% &lt;&lt;"list"&gt;&gt; = eutils:to_binary("list").
+%% &lt;&lt;"list"&gt;&gt; = eutils:to_binary(&lt;&lt;"list"&gt;&gt;).
+%% &lt;&lt;"123"&gt;&gt; = eutils:to_binary(123).
+%% &lt;&lt;"1.20000000000000000000e+01"&gt;&gt; = eutils:to_binary(12.0).
+%% &lt;&lt;"true"&gt;&gt; = eutils:to_binary(true).
+%% &lt;&lt;"false"&gt;&gt; = eutils:to_binary(false).
+%% </pre>
+%% @end
+to_binary(V) when is_binary(V); is_bitstring(V) ->
+  V;
+to_binary(V) ->
+  list_to_binary(to_list(V)).
+
+%% @doc
 %% Check if the given module exist
 %% @end
 module_exist(Module) ->
@@ -68,3 +89,7 @@ module_exist(Module) ->
     false ->
       false
   end.
+
+is_string(V) when is_list(V) ->
+  lists:all(fun is_integer/1, V);
+is_string(_) -> false.
