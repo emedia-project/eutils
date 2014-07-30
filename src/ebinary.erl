@@ -4,6 +4,7 @@
   to_num/1,
   sub/3,
   gsub/3,
+  concat/1,
   do_as_list/2,
   do_as_list/3
   ]).
@@ -37,6 +38,12 @@ sub(Str, Old, New) ->
 -spec gsub(binary(), binary(), binary()) -> binary().
 gsub(Str, Old, New) ->
   do_as_list(estring, gsub, [Str, Old, New]).
+
+%% @doc
+%% @end
+concat(List) when is_list(List) ->
+  F = fun(A, B) -> <<A/binary, B/binary>> end,
+  lists:foldr(F, <<>>, List).
 
 %% @hidden
 do_as_list(Fun, Binary) when is_function(Fun), is_binary(Binary) ->
