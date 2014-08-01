@@ -42,7 +42,11 @@ gsub(Str, Old, New) ->
 %% @doc
 %% @end
 concat(List) when is_list(List) ->
-  F = fun(A, B) -> <<A/binary, B/binary>> end,
+  F = fun(A, B) -> 
+      Ab = eutils:to_binary(A),
+      Bb = eutils:to_binary(B),
+      <<Ab/binary, Bb/binary>> 
+  end,
   lists:foldr(F, <<>>, List).
 
 %% @hidden
