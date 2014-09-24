@@ -5,6 +5,10 @@
   merge_keylists/3,
   keyfind/3,
   keyfind/4,
+  keyfindlast/3,
+  keyfindlast/4,
+  keyfindfirst/3,
+  keyfindfirst/4,
   identical/2,
   include/2,
   fmax/2
@@ -68,6 +72,33 @@ keyfind(Key, N, List, Default) ->
     {Key, Result} -> Result;
     _ -> Default
   end.
+
+%% @doc
+%% Same as elists:keyfindfirst/4 where Default = undefined
+%% @end
+keyfindfirst(Keys, N, List) when is_list(Keys) ->
+  keyfindfirst(Keys, N, List, undefined).
+
+%% @doc
+%% @end
+keyfindfirst([], _, _, Default) ->
+  Default;
+keyfindfirst([Key|Keys], N, List, Default) ->
+  case lists:keyfind(Key, N, List) of
+    {Key, Value} -> {Key, Value};
+    _ -> keyfindfirst(Keys, N, List, Default)
+  end.
+
+%% @doc
+%% Same as elists:keyfindlast/4 where Default = undefined
+%% @end
+keyfindlast(Keys, N, List) when is_list(Keys) ->
+  keyfindlast(Keys, N, List, undefined).
+
+%% @doc
+%% @end
+keyfindlast(Keys, N, List, Default) when is_list(Keys) ->
+  keyfindfirst(lists:reverse(Keys), N, List, Default).
 
 %% @doc
 %% Return true if the two given lists are identical
