@@ -8,7 +8,8 @@ elists_test_() ->
    [
       ?_test(t_is_keylist()),
       ?_test(t_identical()),
-      ?_test(t_merge_keylists())
+      ?_test(t_merge_keylists()),
+      ?_test(t_keylistmap())
    ]}.
 
 setup() ->
@@ -39,6 +40,15 @@ t_merge_keylists() ->
   Args = [{a, 1}, {b, 2}],
   Default = [{b, 3}, {c, 4}],
   Result = elists:merge_keylists(1, Args, Default),
-  io:format("~p ~n", [Result]),
   ?assert(elists:identical([{a, 1}, {b, 2}, {c, 4}], Result)).
 
+t_keylistmap() ->
+  Args = [{<<"toto">>, world, 2}, {<<"titi">>, hello}],
+  Funs = [
+          {1, fun erlang:binary_to_list/1},
+          {3, fun(X) -> X * 2 end}
+         ],
+  Result = elists:keylistmap(Funs, Args),
+  ?assert(
+     elists:identical([{"toto", world, 4}, {"titi", hello}],
+                      Result)).

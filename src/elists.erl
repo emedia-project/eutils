@@ -5,6 +5,7 @@
   merge_keylists/3,
   keyfind/3,
   keyfind/4,
+  keylistmap/2,
   keyfindlast/3,
   keyfindlast/4,
   keyfindfirst/3,
@@ -57,6 +58,38 @@ merge_keylists(N, [Tuple|Rest], TupleList2) when
 %% @hidden
 keyfind(Key, N, List) ->
   keyfind(Key, N, List, false).
+
+%% @doc
+%% Extended keylistmap for tuple list
+%%
+%% Example:
+%% <pre>
+%% Args = [{<<toto>>, world, 2}, {<<titi>>, hello}],
+%% Funs = [
+%%     {1, erlang:binary_to_list/1},
+%%     {3, fun(X) -> X * 2 end}
+%%   ],
+%% elists:keylistmap(Funs, Args).
+%%   # => [{"toto", world, 4}, {"titi", hello}]
+%% </pre>
+%% @end
+keylistmap(Funs, TupleList) when is_list(Funs), is_list(TupleList) ->
+  keylistmap(Funs, TupleList, []).
+
+%% @hidden
+keylistmap(_, [], Result) -> lists:reverse(Result);
+keylistmap(Funs, [Tuple|Rest], Result) ->
+  keylistmap(Funs, Rest, 
+             [list_to_tuple(
+                lists:map(fun({N, Data}) ->
+                              case lists:keyfind(N, 1, Funs) of
+                                {N, Fun} -> Fun(Data);
+                                false -> Data
+                              end
+                          end, 
+                          [{I, element(I, Tuple)} || 
+                           I <- lists:seq(1, tuple_size(Tuple))]))
+              | Result]).
 
 %% @doc
 %% Save as lists:keyfind/3 but with a default value
