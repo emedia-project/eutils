@@ -24,6 +24,7 @@
 -module(edate).
 -author("Dale Harvey <dale@hypernumbers.com>").
 
+-export([to_iso8601/1]).
 -export([format/1, format/2]).
 -export([parse/1, parse/2]).
 -export([nparse/1]).
@@ -60,6 +61,10 @@
 %%
 %% EXPORTS
 %%
+
+%% @doc return date using iso8601 format
+to_iso8601(Date) ->
+    format("Y-m-d H:i:s", Date).
 
 -spec format(string()) -> string().
 %% @doc format current local time as Format

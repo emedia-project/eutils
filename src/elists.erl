@@ -12,7 +12,8 @@
   keyfindfirst/4,
   identical/2,
   include/2,
-  fmax/2
+  fmax/2,
+  index_of/2
   ]).
 
 %% @doc
@@ -147,3 +148,14 @@ identical(List1, List2) when is_list(List1), is_list(List2) ->
 %% @end
 include(List, E) when is_list(List) ->
   lists:any(fun(Elem) -> Elem =:= E end, List).
+
+%% @doc
+%% Return the index of the item in list, or not_found
+%% @end
+index_of(List, Item) when is_list(List) -> 
+  index_of(Item, List, 1).
+
+%% @nodoc
+index_of(_, [], _)  -> not_found;
+index_of(Item, [Item|_], Index) -> Index;
+index_of(Item, [_|Tl], Index) -> index_of(Item, Tl, Index+1).
