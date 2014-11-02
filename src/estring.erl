@@ -6,7 +6,8 @@
   to_num/1,
   sub/3,
   gsub/3,
-  split_first/2
+  split_first/2,
+  repeat/2
   ]).
 
 %% @doc
@@ -121,6 +122,17 @@ sub(Str, Old, New) ->
 gsub(Str,Old,New) ->
   Acc = sub(Str,Old,New),
   subst(Acc,Old,New,Str).
+
+%% @doc
+%% Create a string where X is repeated N times
+%%
+%% Example:
+%% <pre>
+%% "hellohellohello" = string,repeat("hello", 3).
+%% </pre>
+%% @end
+repeat(X, N) ->
+  lists:flatten(lists:duplicate(N, X)).
 
 %% Private
 
