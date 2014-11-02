@@ -17,47 +17,47 @@ teardown(_) ->
 
 t_valid() ->
   ?assertEqual(
-     exml:build({<<"document">>, [{<<"hello">>, <<"world">>}], <<"Say hello">>}, 
+     exml:export({<<"document">>, [{<<"hello">>, <<"world">>}], <<"Say hello">>}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\">Say hello</document>">>),
   ?assertEqual(
-     exml:build({"document", [{"hello", "world"}], <<"Say hello">>}, 
+     exml:export({"document", [{"hello", "world"}], <<"Say hello">>}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\">Say hello</document>">>),
   ?assertEqual(
-     exml:build({document, [{hello, <<"world">>}], <<"Say hello">>}, 
+     exml:export({document, [{hello, <<"world">>}], <<"Say hello">>}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\">Say hello</document>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], <<"Say hello">>}, 
+     exml:export({document, [{hello, "world"}], <<"Say hello">>}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\">Say hello</document>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], {say}}, 
+     exml:export({document, [{hello, "world"}], {say}}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\"><say/></document>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], {}}, 
+     exml:export({document, [{hello, "world"}], {}}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\"/>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], []}, 
+     exml:export({document, [{hello, "world"}], []}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\"/>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], [{}]}, 
+     exml:export({document, [{hello, "world"}], [{}]}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\"/>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], {say, <<"hello">>}}, 
+     exml:export({document, [{hello, "world"}], {say, <<"hello">>}}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\"><say>hello</say></document>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], {say, [{lang, en}], [<<"hello">>]}}, 
+     exml:export({document, [{hello, "world"}], {say, [{lang, en}], [<<"hello">>]}}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\"><say lang=\"en\">hello</say></document>">>),
   ?assertEqual(
-     exml:build({document, [{hello, "world"}], {say, [{lang, en}], [<<"hello">>, {hola}, bonjour]}}, 
+     exml:export({document, [{hello, "world"}], {say, [{lang, en}], [<<"hello">>, {hola}, bonjour]}}, 
                 [{prolog, <<"">>}, {format, false}]), 
      <<"<document hello=\"world\"><say lang=\"en\">hello<hola/>bonjour</say></document>">>).
 

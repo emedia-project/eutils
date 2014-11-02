@@ -1,7 +1,7 @@
 -module(exml).
 -export([
-         build/1,
-         build/2
+         export/1,
+         export/2
         ]).
 
 -define(XML_PROLOG, <<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>">>).
@@ -13,11 +13,11 @@
          {level, 0}
         ]).
 
-build(X) ->
-  build(X, ?DEFAULT_OPTIONS).
-build(X, Options) when is_map(Options) ->
-  build(X, maps:to_list(Options));
-build(X, Options) when is_tuple(X), is_list(Options) ->
+export(X) ->
+  export(X, ?DEFAULT_OPTIONS).
+export(X, Options) when is_map(Options) ->
+  export(X, maps:to_list(Options));
+export(X, Options) when is_tuple(X), is_list(Options) ->
   FinalOptions = maps:from_list(
     elists:merge_keylists(1, Options, ?DEFAULT_OPTIONS)
    ),
@@ -97,17 +97,3 @@ attrs([{Attr, Value}|Rest], Acc) ->
   ValueBin = eutils:to_binary(Value),
   attrs(Rest, <<Acc/binary, " ", AttrBin/binary, "=\"", ValueBin/binary, "\"">>).
 
-
-% build({}) -> "";
-% 
-% build({Tag,Value}) ->
-%   build({Tag,[],Value});
-% build({Tag,AttrList,ContentList}) when is_list(ContentList) ->
-%   Content = list_to_atom(lists:flatmap(fun build/1, ContentList)),
-%   build({Tag,AttrList,Content});
-% build({Tag,AttrList,Content}) when is_tuple(Content) ->
-%   build({Tag,AttrList,list_to_atom(build(Content))});
-% build({TAG,AttrList,Content}) ->
-%   Tag = atom_to_list(TAG),
-%   "<"++Tag++attrs(AttrList,"")++">"++atom_to_list(Content)++"</"++Tag++">".
-% 
