@@ -128,7 +128,7 @@ gsub(Str,Old,New) ->
 %%
 %% Example:
 %% <pre>
-%% "hellohellohello" = string,repeat("hello", 3).
+%% "hellohellohello" = estring:repeat("hello", 3).
 %% </pre>
 %% @end
 repeat(X, N) ->

@@ -6,7 +6,8 @@
   gsub/3,
   concat/1,
   do_as_list/2,
-  do_as_list/3
+  do_as_list/3,
+  repeat/2
   ]).
 
 %% @doc
@@ -58,3 +59,14 @@ do_as_list(Module, Function, Binary) when is_atom(Module), is_atom(Function), is
 do_as_list(Module, Function, Binaries) when is_atom(Module), is_atom(Function), is_list(Binaries) ->
   Lists = lists:map(fun binary_to_list/1, Binaries),
   list_to_binary(erlang:apply(Module, Function, Lists)).
+
+%% @doc
+%% Create a binary where X is repeated N times
+%%
+%% Example:
+%% <pre>
+%% <<"hellohellohello">> = ebinary:repeat(<<"hello">>, 3).
+%% </pre>
+%% @end
+repeat(X, N) ->
+  list_to_binary(estring:repeat(binary_to_list(X), N)).
