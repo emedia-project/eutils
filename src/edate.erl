@@ -25,6 +25,8 @@
 -author("Dale Harvey <dale@hypernumbers.com>").
 
 -export([to_iso8601/1]).
+-export([add/2, add/3]).
+-export([today/0, yesterday/0, tomorrow/0]).
 -export([format/1, format/2]).
 -export([parse/1, parse/2]).
 -export([nparse/1]).
@@ -61,6 +63,60 @@
 %%
 %% EXPORTS
 %%
+
+%% @spec add(datetime(), integer(), atom()) -> datetime()
+add(DateTime, N, seconds) ->
+    T1 = calendar:datetime_to_gregorian_seconds(DateTime),
+    T2 = T1 + N,
+    calendar:gregorian_seconds_to_datetime(T2);
+add(DateTime, N, minutes) ->
+    add(DateTime, 60*N, seconds);
+add(DateTime, N, hours) ->
+    add(DateTime, 60*N, minutes);
+add(DateTime, N, days) ->
+    add(DateTime, 24*N, hours);
+add(DateTime, N, weeks) ->
+    add(DateTime, 7*N, days);
+add({{YYYY, MM, DD}=Date, Time}, 0, months) ->
+    case calendar:valid_date(Date) of
+    true  -> {Date, Time};
+    false -> add({{YYYY, MM, DD-1}, Time}, 0, months)
+    end;
+add({{YYYY, MM, DD}, Time}, N, months) when N > 0 andalso MM < 12 ->
+    add({{YYYY, MM+1, DD}, Time}, N-1, months);
+add({{YYYY, MM, DD}, Time}, N, months) when N > 0 andalso MM =:= 12 ->
+    add({{YYYY+1, 1, DD}, Time}, N-1, months); 
+add({{YYYY, MM, DD}, Time}, N, months) when N < 0 andalso MM > 1 ->
+    add({{YYYY, MM-1, DD}, Time}, N+1, months);
+add({{YYYY, MM, DD}, Time}, N, months) when N < 0 andalso MM =:= 1 ->
+    add({{YYYY-1, 12, DD}, Time}, N+1, months);
+add(Date, N, years) ->
+    add(Date, 12*N, months).
+
+%% @spec add(datetime(), atom() | integer()) -> datetime()
+add(Date, second) ->
+    add(Date, 1, seconds);
+add(Date, minute) ->
+    add(Date, 1, minutes);
+add(Date, hour) ->
+    add(Date, 1, hours);
+add(Date, day) ->
+    add(Date, 1);
+add(Date, week) ->
+    add(Date, 1, weeks);
+add(Date, month) ->
+    add(Date, 1, months);
+add(Date, year) ->
+    add(Date, 1, years);
+add(Date, N)  ->
+    add(Date, N, days).
+
+%% @spec today() -> datetime()
+today() -> erlang:localtime().
+%% @spec tomorrow() -> datetime()
+tomorrow() -> add(today(), 1).
+%% @spec yesterday() -> datetime()
+yesterday() -> add(today(), -1).
 
 %% @doc return date using iso8601 format
 to_iso8601(Date) ->
