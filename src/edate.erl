@@ -120,7 +120,7 @@ yesterday() -> add(today(), -1).
 
 %% @doc return date using iso8601 format
 to_iso8601(Date) ->
-    format("Y-m-d H:i:s", Date).
+    format("Y-m-dTH:i:s", Date).
 
 -spec format(string()) -> string().
 %% @doc format current local time as Format
