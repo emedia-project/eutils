@@ -4,6 +4,7 @@
   to_atom/1,
   to_list/1,
   to_binary/1,
+  to_integer/1,
   module_exist/1,
   is_string/1
   ]).
@@ -72,6 +73,29 @@ to_binary(V) when is_binary(V); is_bitstring(V) ->
   V;
 to_binary(V) ->
   list_to_binary(to_list(V)).
+
+%% @doc
+%% Convert the given term to integer
+%%
+%% Example
+%%<pre>
+%% 123 = eutils:to_integer(123).
+%% 123 = eutils:to_integer("123").
+%% 123 = eutils:to_integer(<<"123">>).
+%% 123 = eutils:to_integer('123').
+%% 123 = eutils:to_integer(123.456).
+%% </pre<
+%% @end
+to_integer(I) when is_integer(I) ->
+  I;
+to_integer(I) when is_list(I) ->
+  list_to_integer(I);
+to_integer(I) when is_binary(I); is_bitstring(I) ->
+  binary_to_integer(I);
+to_integer(I) when is_atom(I) ->
+  to_integer(atom_to_list(I));
+to_integer(I) when is_float(I) ->
+  to_integer(float_to_list(I, [{decimals, 0}])).
 
 %% @doc
 %% Check if the given module exist
