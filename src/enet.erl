@@ -14,7 +14,11 @@ str_to_ip(IP) when is_list(IP) ->
   {A, B, C, D}.
 
 ip_to_str({A, B, C, D}) ->
-  lists:flatten(io_lib:format("~B.~B.~B.~B", [A, B, C, D])).
+  lists:flatten(io_lib:format("~B.~B.~B.~B", [A, B, C, D]));
+ip_to_str(IP) when is_list(IP) ->
+  IP;
+ip_to_str(IP) when is_binary(IP) ->
+  lists:flatten(eutils:to_list(IP)).
 
 get_active_ip() ->
   get_active_ip(get_iflist()).
