@@ -72,7 +72,7 @@ to_list(false) ->
 to_binary(V) when is_binary(V); is_bitstring(V) ->
   V;
 to_binary(V) ->
-  list_to_binary(to_list(V)).
+  iolist_to_binary(to_list(V)).
 
 %% @doc
 %% Convert the given term to integer
