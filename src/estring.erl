@@ -14,7 +14,7 @@
 %% @doc
 %% @end
 join([First|Rest], JoinWith) ->
-  lists:flatten([First] ++ [JoinWith ++ X || X <- Rest]).
+  lists:flatten([First] ++ [JoinWith ++ eutils:to_list(X) || X <- Rest, eutils:to_list(X) =/= ""]).
 
 %% @doc
 %% Split sthe given string at the first Token found
