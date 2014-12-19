@@ -1,6 +1,7 @@
 -module(estring).
 
 -export([
+  join/2,
   start_with/2,
   start_with/3,
   to_num/1,
@@ -9,6 +10,11 @@
   split_first/2,
   repeat/2
   ]).
+
+%% @doc
+%% @end
+join([First|Rest], JoinWith) ->
+  lists:flatten([First] ++ [JoinWith ++ X || X <- Rest]).
 
 %% @doc
 %% Split sthe given string at the first Token found
