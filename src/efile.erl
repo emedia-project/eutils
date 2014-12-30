@@ -5,14 +5,17 @@
   normalize_path/1,
   user_home/0,
   make_dir/1,
-  remove_recursive/1
+  remove_recursive/1,
+  relative_from/2,
+  realpath/1
   ]).
 
 %% @doc
 %% Expand the given path
 %%
 %% Example:
-%% <pre>
+%%
+%% <pre lang="erlang">
 %% "/home/user" = efile:expand_path("~").
 %% &lt;&lt;"/home/user"&gt;&gt; = efile:expand_path(&lt;&lt;"~"&gt;&gt;).
 %% </pre>
@@ -27,7 +30,8 @@ expand_path(Path) when is_list(Path) ->
 %% Normalize the given path
 %%
 %% Example:
-%% <pre>
+%%
+%% <pre lang="erlang">
 %% "/" = efile:normalize_path("/toto/tutu/../../../../../..").
 %% &lt;&lt;"/"&gt;&gt; = efile:normalize_path(&lt;&lt;"/toto/tutu/../../../../../.."&gt;&gt;).
 %% "/toto/titi" = efile:normalize_path("/toto/tata/../titi").
@@ -56,7 +60,8 @@ normalize_path([], Acc) ->
 %% Return the HOME directory
 %%
 %% Example:
-%% <pre>
+%%
+%% <pre lang="erlang">
 %% "/home/user" = efile:user_home().
 %% </pre>
 %% @end
@@ -85,7 +90,69 @@ remove_recursive(Path) ->
       file:del_dir(Path)
   end.
 
-%% Private
+%% @doc
+%% @end
+relative_from(FilePath, FromPath) ->
+  case get_real_path(FilePath) of
+    {ok, FilePath1} ->
+      case get_real_path(FromPath) of
+        {ok, FromPath1} ->
+          realpath(
+            filename:join(
+              relative_from1(
+                filename:split(FilePath1), 
+                filename:split(FromPath1))));
+        E -> E
+      end;
+    E -> E
+  end.
+
+%% @doc
+%% Return the realpath of the given path
+%% @end
+realpath(Path) ->
+  filename:join(
+    realpath(
+      filename:split(Path), 
+      []
+    )
+  ).
+
+% private
+
+get_real_path(Path) ->
+  case filename:split(Path) of
+    ["/"|_] -> {ok, Path};
+    FilePath3 -> 
+      case file:get_cwd() of
+        {ok, Dir} -> {ok, realpath(filename:join(filename:split(Dir) ++ FilePath3))};
+        E -> E
+      end
+  end.
+
+relative_from1([C|File], [C|From]) ->
+  relative_from1(File, From);
+relative_from1(File, From) ->
+  [".." || X <- From, X =/= "/"] ++ File.
+
+realpath([], Result) ->
+  Result;
+realpath([Current|List], Result) when Current =:= "..", length(Result) > 0 ->
+  case lists:reverse(Result) of
+    [".."|_] -> 
+      realpath(List, Result ++ [Current]);
+    _ ->
+      case re:run(Result, "^.*/$") of
+        {match, _} -> 
+          realpath(List, Result);
+        nomatch ->
+          realpath(List, lists:reverse(tl(lists:reverse(Result))))
+      end
+  end;
+realpath([Current|List], Result) when Current =:= "." ->
+  realpath(List, Result);
+realpath([Current|List], Result) ->
+  realpath(List, Result ++ [Current]).
 
 sub_files(From) ->
   {ok, SubFiles} = file:list_dir(From),

@@ -20,7 +20,7 @@ join([First|Rest], JoinWith) ->
 %% Split sthe given string at the first Token found
 %%
 %% Example:
-%% <pre>
+%% <pre lang="erlang">
 %% {"hello" " world, I love you"} = estring:split_first("hello, world, I love you", ",")
 %% </pre>
 %% @doc
@@ -39,7 +39,7 @@ split_first([C|Rest], Token, {A, B}) ->
 %% Same as estring:start(String, Start, false)
 %%
 %% Example :
-%% <pre>
+%% <pre lang="erlang">
 %% true = estring:start_with("Hello world", "Hello").
 %% false = estring:start_with("Goodbye world", "Hello").
 %% </pre>
@@ -54,7 +54,7 @@ start_with(String, Substr) when is_list(String), is_list(Substr) ->
 %% Return true if the first string start with the second one
 %%
 %% Example :
-%% <pre>
+%% <pre lang="erlang">
 %% true = estring:start_with("Hello world", "HELLO", true).
 %% false = estring:start_with("Hello world", "HELLO", false).
 %% true = estring:start_with("Hello world", "Hello", true).
@@ -73,7 +73,7 @@ start_with(String, Substr, IgnoreCase) when is_list(String), is_list(Substr), is
 %% Return the number corresponding to the given string
 %%
 %% Example:
-%% <pre>
+%% <pre lang="erlang">
 %% {ok, 123} = estring:to_num("123").
 %% {ok, 12.3} = estring:to_num("12.3").
 %% {error, not_a_number} = estring:to_num("abc").
@@ -95,7 +95,7 @@ to_num(String) when is_list(String) ->
 %% Return an new string with the first occurance of Old substitued by New
 %%
 %% Example:
-%% <pre>
+%% <pre lang="erlang">
 %% "HeLlo World" = estring:sub("Hello World", "l", "L").
 %% </pre>
 %% @end
@@ -120,7 +120,7 @@ sub(Str, Old, New) ->
 %% Return an new string with the all occurances of Old substitued by New
 %%
 %% Example:
-%% <pre>
+%% <pre lang="erlang">
 %% "HeLLo WorLd" = estring:gsub("Hello World", "l", "L").
 %% </pre>
 %% @end
@@ -133,7 +133,7 @@ gsub(Str,Old,New) ->
 %% Create a string where X is repeated N times
 %%
 %% Example:
-%% <pre>
+%% <pre lang="erlang">
 %% "hellohellohello" = estring:repeat("hello", 3).
 %% </pre>
 %% @end

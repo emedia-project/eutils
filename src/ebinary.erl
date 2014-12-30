@@ -5,12 +5,21 @@
   sub/3,
   gsub/3,
   concat/1,
+  join/2,
   do_as_list/2,
   do_as_list/3,
   repeat/2
   ]).
 
 %% @doc
+%% Return the number corresponding to the given binary
+%%
+%% Example:
+%% <pre lang="erlang">
+%% {ok, 123} = estring:to_num(&lt;&lt;"123"&gt;&gt;).
+%% {ok, 12.3} = estring:to_num(&lt;&lt;"12.3"&gt;&gt;).
+%% {error, not_a_number} = estring:to_num(&lt;&lt;"abc"&gt;&gt;).
+%% </pre>
 %% @end
 -spec to_num(binary()) -> {ok, number()} | {error, not_a_number}.
 to_num(Binary) when is_binary(Binary) ->
@@ -20,7 +29,8 @@ to_num(Binary) when is_binary(Binary) ->
 %% Return an new string with the first occurance of Old substitued by New
 %%
 %% Example:
-%% <pre>
+%%
+%% <pre lang="erlang">
 %% &lt;&lt;"HeLlo world"&gt;&gt; = ebinary:sub(&lt;&lt;"Hello World"&gt;&gt;, &lt;&lt;"l"&gt;&gt;, &lt;&lt;"L"&gt;&gt;).
 %% </pre>
 %% @end
@@ -32,7 +42,8 @@ sub(Str, Old, New) ->
 %% Return an new string with the all occurances of Old substitued by New
 %%
 %% Example:
-%% <pre>
+%%
+%% <pre lang="erlang">
 %% &lt;&lt;"HeLLo worLd"&gt;&gt; = ebinary:gsub(&lt;&lt;"Hello World"&gt;&gt;, &lt;&lt;"l"&gt;&gt;, &lt;&lt;"L"&gt;&gt;).
 %% </pre>
 %% @end
@@ -41,14 +52,34 @@ gsub(Str, Old, New) ->
   do_as_list(estring, gsub, [Str, Old, New]).
 
 %% @doc
+%% Concatenate a list of binaries
+%%
+%% Example:
+%%
+%% <pre lang="erlang">
+%% &lt;&lt;"tototatatiti"&gt:&gt; = ebinary:concat([&lt;&lt;"toto"&gt;&gt;, &lt;&lt;"tata"&gt;&gt;, &lt;&lt;"titi"&gt;&gt;]).
+%% </pre>
 %% @end
 concat(List) when is_list(List) ->
-  F = fun(A, B) -> 
-      Ab = eutils:to_binary(A),
-      Bb = eutils:to_binary(B),
-      <<Ab/binary, Bb/binary>> 
-  end,
-  lists:foldr(F, <<>>, List).
+  join(List, <<>>).
+
+%% @doc
+%% join a list of binaries with the given separator
+%%
+%% Example:
+%%
+%% <pre lang="erlang">
+%% &lt;&lt;"toto-tata-titi"&gt:&gt; = ebinary:join([&lt;&lt;"toto"&gt;&gt;, &lt;&lt;"tata"&gt;&gt;, &lt;&lt;"titi"&gt;&gt;], &lt;&lt;"-"&gt;&gt;).
+%% </pre>
+%% @end
+join([First|Rest], Sep) ->
+  F = fun(A, B) ->
+          Ab = eutils:to_binary(A),
+          Bb = eutils:to_binary(B),
+          S = eutils:to_binary(Sep),
+          <<Ab/binary, S/binary, Bb/binary>>
+      end,
+  lists:foldr(F, First, Rest).
 
 %% @hidden
 do_as_list(Fun, Binary) when is_function(Fun), is_binary(Binary) ->
@@ -64,7 +95,8 @@ do_as_list(Module, Function, Binaries) when is_atom(Module), is_atom(Function), 
 %% Create a binary where X is repeated N times
 %%
 %% Example:
-%% <pre>
+%%
+%% <pre lang="erlang">
 %% <<"hellohellohello">> = ebinary:repeat(<<"hello">>, 3).
 %% </pre>
 %% @end

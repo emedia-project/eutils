@@ -2,8 +2,6 @@
 
 -export([get_env/3]).
 
+% @deprecated Use application:get_env/3
 get_env(App, Key, Default) ->
-  case application:get_env(App, Key) of
-    {ok, Value} -> Value;
-    _ -> Default
-  end.
+  application:get_env(App, Key, Default).
