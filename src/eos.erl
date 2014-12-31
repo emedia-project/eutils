@@ -1,7 +1,8 @@
 -module(eos).
 
 -export([
-         in/2
+         in/2,
+         in/3
         ]).
 
 %% @doc
@@ -15,12 +16,12 @@
 %%   end).
 %% </pre>
 %% @end
-in(Path, Fun) when is_function(Fun) ->
+in(Path, Fun, Args) when is_function(Fun) ->
   case file:get_cwd() of
     {ok, Dir} ->
       case file:set_cwd(Path) of
         ok -> 
-          Result = Fun(),
+          Result = apply(Fun, Args),
           case file:set_cwd(Dir) of
             ok -> Result;
             E -> E
@@ -29,3 +30,7 @@ in(Path, Fun) when is_function(Fun) ->
       end;
     E -> E
   end.
+
+%% @equiv in(Path, Fun, [])
+in(Path, Fun) when is_function(Fun) ->
+  in(Path, Fun, []).

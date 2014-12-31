@@ -21,6 +21,12 @@ t_in() ->
                      ?assertMatch({ok, "/tmp"}, file:get_cwd()),
                      ?assertNotMatch({ok, Dir}, file:get_cwd())
                  end),
+  eos:in("/tmp", fun(Arg1, Arg2) ->
+                     ?assertMatch({ok, "/tmp"}, file:get_cwd()),
+                     ?assertNotMatch({ok, Dir}, file:get_cwd()),
+                     ?assertMatch(arg1, Arg1),
+                     ?assertMatch(arg2, Arg2)
+                 end, [arg1, arg2]),
   {ok, Dir1} = file:get_cwd(),
   ?assertEqual(Dir, Dir1),
   ?assertNotMatch("/tmp", Dir1).
