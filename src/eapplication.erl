@@ -12,6 +12,20 @@ get_env(App, Key, Default) ->
   application:get_env(App, Key, Default).
 
 %% @doc
+%% Load an application configuration from the given config file
+%%
+%% Example :
+%%
+%% <pre lang="erlang">
+%% undefined = application:get_env(test, key).
+%% eapplication:set_env_from_file("path/to/sys.config").
+%% {ok, Value} = application:get_env(test, key).
+%% </pre>
+%%
+%% WARNING :
+%%
+%% Call this function *after* loading your application. This is not mandatory but the
+%% environment defined in the app file won't be loaded if an other env was loaded before.
 %% @end
 -spec set_env_from_file(file:filename()) -> ok | {error, any()}.
 set_env_from_file(File) ->
@@ -23,6 +37,20 @@ set_env_from_file(File) ->
   end.
 
 %% @doc
+%% Load an application configuration from the given configuration
+%%
+%% Example :
+%%
+%% <pre lang="erlang">
+%% undefined = application:get_env(test, key).
+%% eapplication:set_env_from_file([{test, [{key, "value"}]}]).
+%% {ok, Value} = application:get_env(test, key).
+%% </pre>
+%%
+%% WARNING :
+%%
+%% Call this function *after* loading your application. This is not mandatory but the
+%% environment defined in the app file won't be loaded if an other env was loaded before.
 %% @end
 -spec set_env_from_config([term()]) -> ok | {error, any()}.
 set_env_from_config([]) -> ok;
@@ -33,6 +61,20 @@ set_env_from_config([{AppName, AppConfig}|Rest]) ->
   end.
 
 %% @doc
+%% Load a configuration for the given app with the given configuration
+%%
+%% Example :
+%%
+%% <pre lang="erlang">
+%% undefined = application:get_env(test, key).
+%% eapplication:set_env(test, [{key, "value"}]).
+%% {ok, Value} = application:get_env(test, key).
+%% </pre>
+%%
+%% WARNING :
+%%
+%% Call this function *after* loading your application. This is not mandatory but the
+%% environment defined in the app file won't be loaded if an other env was loaded before.
 %% @end
 -spec set_env(atom(), [term()]) -> ok | {error, any()}.
 set_env(_, []) -> ok;
