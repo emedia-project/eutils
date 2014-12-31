@@ -8,7 +8,8 @@
   sub/3,
   gsub/3,
   split_first/2,
-  repeat/2
+  repeat/2,
+  quote/1
   ]).
 
 %% @doc
@@ -125,9 +126,22 @@ sub(Str, Old, New) ->
 %% </pre>
 %% @end
 -spec gsub(string(), string(), string()) -> string().
-gsub(Str,Old,New) ->
-  Acc = sub(Str,Old,New),
-  subst(Acc,Old,New,Str).
+gsub(Str, Old, New) ->
+  %Acc = sub(Str,Old,New),
+  %subst(Acc,Old,New,Str).
+  gsub(Str, Old, New, "").
+
+gsub("", _Old, _New, Acc) -> lists:flatten(Acc);
+gsub(Str, Old, New, Acc) ->
+  case string:str(Str, Old) of
+    0 ->
+      gsub("", Old, New, Acc ++ Str);
+    Pos ->
+      Pre = string:left(Str, Pos - 1),
+      Rest = string:right(Str, length(Str) - Pos + 1 - length(Old)),
+      gsub(Rest, Old, New, Acc ++ Pre ++ New)
+  end.
+
 
 %% @doc
 %% Create a string where X is repeated N times
@@ -140,9 +154,8 @@ gsub(Str,Old,New) ->
 repeat(X, N) ->
   lists:flatten(lists:duplicate(N, X)).
 
-%% Private
+%% @doc
+%% @end
+quote(Str) ->
+  "\"" ++ gsub(Str, "\"", "\\\"") ++ "\"".
 
-subst(Str,_Old,_New, Str) -> Str;
-subst(Acc, Old, New,_Str) ->
-  Acc1 = sub(Acc,Old,New),
-  subst(Acc1,Old,New,Acc).
