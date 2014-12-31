@@ -35,7 +35,7 @@ set_env_from_config([{AppName, AppConfig}|Rest]) ->
 %% @doc
 %% @end
 -spec set_env(atom(), [term()]) -> ok | {error, any()}.
-set_env(AppName, []) -> ok;
+set_env(_, []) -> ok;
 set_env(AppName, [{Key, Value}|Config]) ->
   _ = application:set_env(AppName, Key, Value),
   set_env(AppName, Config).
