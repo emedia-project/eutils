@@ -6,6 +6,7 @@
   user_home/0,
   make_dir/1,
   remove_recursive/1,
+  copy_recursive/2,
   relative_from/2,
   realpath/1
   ]).
@@ -88,6 +89,29 @@ remove_recursive(Path) ->
     true ->
       lists:foreach(fun remove_recursive/1, sub_files(Path)),
       file:del_dir(Path)
+  end.
+
+%% @doc
+%% @end
+copy_recursive(Source, Destination) ->
+  Base = filename:basename(Source),
+  Dest = filename:join(Destination, Base),
+  case filelib:is_dir(Source) of
+    false -> 
+      case file:copy(Source, Dest) of
+        {error, Reason} ->
+          error(Reason);
+        _ -> ok
+      end;
+    true ->
+      case make_dir(Dest) of
+        ok ->
+          lists:foreach(fun(File) ->
+                            copy_recursive(File, Dest)
+                        end, sub_files(Source));
+        {error, Reason} ->
+          error(Reason)
+      end
   end.
 
 %% @doc
