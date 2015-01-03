@@ -94,24 +94,39 @@ remove_recursive(Path) ->
 %% @doc
 %% @end
 copy_recursive(Source, Destination) ->
-  Base = filename:basename(Source),
-  Dest = filename:join(Destination, Base),
-  case filelib:is_dir(Source) of
-    false -> 
-      case file:copy(Source, Dest) of
-        {error, Reason} ->
-          error(Reason);
-        _ -> ok
+  case file:read_file_info(Source) of
+    {ok, FileInfo} ->
+      Base = filename:basename(Source),
+      Dest = filename:join(Destination, Base),
+      case filelib:is_dir(Source) of
+        false -> 
+          case file:copy(Source, Dest) of
+            {error, Reason} ->
+              error(Reason);
+            _ -> 
+              case file:write_file_info(Dest, FileInfo) of
+                ok -> ok;
+                {error, Reason} ->
+                  error(Reason)
+              end
+          end;
+        true ->
+          case make_dir(Dest) of
+            ok ->
+              case file:write_file_info(Dest, FileInfo) of
+                ok -> ok;
+                {error, Reason} ->
+                  error(Reason)
+              end,
+              lists:foreach(fun(File) ->
+                                copy_recursive(File, Dest)
+                            end, sub_files(Source));
+            {error, Reason} ->
+              error(Reason)
+          end
       end;
-    true ->
-      case make_dir(Dest) of
-        ok ->
-          lists:foreach(fun(File) ->
-                            copy_recursive(File, Dest)
-                        end, sub_files(Source));
-        {error, Reason} ->
-          error(Reason)
-      end
+    {error, Reason} ->
+      error(Reason)
   end.
 
 %% @doc
