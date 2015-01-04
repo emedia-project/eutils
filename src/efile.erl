@@ -96,7 +96,7 @@ remove_recursive(Path) ->
 %% @doc
 %% @end
 copy(Source, Destination, Options) ->
-  case elists:include(recursive) of
+  case elists:include(Options, recursive) of
     true ->
       Base = filename:basename(Source),
       Dest = filename:join(Destination, Base),
