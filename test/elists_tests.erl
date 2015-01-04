@@ -9,7 +9,8 @@ elists_test_() ->
       ?_test(t_is_keylist()),
       ?_test(t_identical()),
       ?_test(t_merge_keylists()),
-      ?_test(t_keylistmap())
+      ?_test(t_keylistmap()),
+      ?_test(t_delete_if())
    ]}.
 
 setup() ->
@@ -52,3 +53,8 @@ t_keylistmap() ->
   ?assert(
      elists:identical([{"toto", world, 4}, {"titi", hello}],
                       Result)).
+
+t_delete_if() ->
+  ?assertMatch([1,2,3], elists:delete_if(fun(E) ->
+                                             E > 3
+                                         end, [1,4,2,5,3,6,7,8])).
