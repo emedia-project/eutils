@@ -12,6 +12,7 @@
   keyfindfirst/4,
   identical/2,
   include/2,
+  delete_if/2,
   fmax/2,
   index_of/2
   ]).
@@ -148,6 +149,16 @@ identical(List1, List2) when is_list(List1), is_list(List2) ->
 %% @end
 include(List, E) when is_list(List) ->
   lists:any(fun(Elem) -> Elem =:= E end, List).
+
+%% @doc
+%% @end
+delete_if(Fun, List) ->
+  lists:reverse(lists:foldl(fun(E, Acc) ->
+                                case Fun(E) of
+                                  true -> Acc;
+                                  false -> [E|Acc]
+                                end
+                            end, [], List)).
 
 %% @doc
 %% Return the index of the item in list, or not_found

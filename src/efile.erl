@@ -8,7 +8,8 @@
   remove_recursive/1,
   copy_recursive/2,
   relative_from/2,
-  realpath/1
+  realpath/1,
+  wildcard/2
   ]).
 
 %% @doc
@@ -156,6 +157,15 @@ realpath(Path) ->
       []
     )
   ).
+
+%% @doc
+%% @end
+wildcard(Path, Exclude) ->
+  elists:delete_if(fun(P) ->
+                       lists:any(fun(E) ->
+                                     string:str(P, E) >= 0
+                                 end, Exclude)
+                   end, filelib:wildcard(Path)).
 
 % private
 
