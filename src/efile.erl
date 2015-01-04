@@ -114,22 +114,29 @@ copy(Source, Destination, Options) ->
                       error(Reason)
                   end,
                   SubFiles = sub_files(Source),
-                  ExcludedFiles = elists:keyfind(exclude, 1, Options, []),
-                  SubFiles1 = elists:delete_if(
-                                fun(File) ->
-                                    lists:any(
-                                      fun(Exclude) ->
-                                          string:str(expand_path(File), Exclude) =/= 0
-                                      end, ExcludedFiles)
-                                end, SubFiles),
-                  OnlyFiles = elists:keyfind(only, 1, Options, []),
-                  SubFiles2 = elists:delete_if(
-                                fun(File) ->
-                                    lists:all(
-                                      fun(Only) ->
-                                          string:str(expand_path(File), Only) =:= 0
-                                      end, OnlyFiles)
-                                end, SubFiles1),
+                  SubFiles1 = case lists:keyfind(exclude, 1, Options) of
+                                {exclude, []} -> SubFiles;
+                                {exclude, ExcludedFiles} ->
+                                  elists:delete_if(
+                                    fun(File) ->
+                                        lists:any(
+                                          fun(Exclude) ->
+                                              string:str(expand_path(File), Exclude) =/= 0
+                                          end, ExcludedFiles)
+                                    end, SubFiles)
+                              end,
+                  SubFiles2 = case lists:keyfind(only, 1, Options) of
+                                {only, []} ->
+                                  SubFiles1;
+                                {only, OnlyFiles} ->
+                                  elists:delete_if(
+                                    fun(File) ->
+                                        lists:all(
+                                          fun(Only) ->
+                                              string:str(expand_path(File), Only) =:= 0
+                                          end, OnlyFiles)
+                                    end, SubFiles1)
+                              end,
                   lists:foreach(fun(File) ->
                                     copy(File, Dest, Options)
                                 end, SubFiles2);
