@@ -6,7 +6,8 @@
   user_home/0,
   make_dir/1,
   remove_recursive/1,
-  copy_recursive/2,
+  copy/3,
+  copyfile/2,
   relative_from/2,
   realpath/1,
   wildcard/2
@@ -94,34 +95,64 @@ remove_recursive(Path) ->
 
 %% @doc
 %% @end
-copy_recursive(Source, Destination) ->
-  case file:read_file_info(Source) of
-    {ok, FileInfo} ->
+copy(Source, Destination, Options) ->
+  case elists:include(recursive) of
+    true ->
       Base = filename:basename(Source),
       Dest = filename:join(Destination, Base),
       case filelib:is_dir(Source) of
         false -> 
-          case file:copy(Source, Dest) of
-            {error, Reason} ->
-              error(Reason);
-            _ -> 
-              case file:write_file_info(Dest, FileInfo) of
-                ok -> ok;
-                {error, Reason} ->
-                  error(Reason)
-              end
-          end;
+          copyfile(Source, Dest);
         true ->
-          case make_dir(Dest) of
-            ok ->
-              case file:write_file_info(Dest, FileInfo) of
-                ok -> ok;
+          case file:read_file_info(Source) of
+            {ok, FileInfo} ->
+              case make_dir(Dest) of
+                ok ->
+                  case file:write_file_info(Dest, FileInfo) of
+                    ok -> ok;
+                    {error, Reason} ->
+                      error(Reason)
+                  end,
+                  SubFiles = sub_files(Source),
+                  ExcludedFiles = elists:keyfind(exclude, 1, Options, []),
+                  SubFiles1 = elists:delete_if(
+                                fun(File) ->
+                                    lists:any(
+                                      fun(Exclude) ->
+                                          string:str(expand_path(File), Exclude) > 0
+                                      end, ExcludedFiles)
+                                end, SubFiles),
+                  OnlyFiles = elists:keyfind(only, 1, Options, []),
+                  SubFiles2 = elists:delete_if(
+                                fun(File) ->
+                                    lists:any(
+                                      fun(Only) ->
+                                          string:str(expand_path(File), Only) =:= 0
+                                      end, OnlyFiles)
+                                end, SubFiles1),
+                  lists:foreach(fun(File) ->
+                                    copy(File, Dest, Options)
+                                end, SubFiles2);
                 {error, Reason} ->
                   error(Reason)
-              end,
-              lists:foreach(fun(File) ->
-                                copy_recursive(File, Dest)
-                            end, sub_files(Source));
+              end;
+            {error, Reason} ->
+              error(Reason)
+          end
+      end;
+    false ->
+      copyfile(Source, Destination)
+  end.
+
+copyfile(Source, Destination) ->
+  case file:read_file_info(Source) of
+    {ok, FileInfo} ->
+      case file:copy(Source, Destination) of
+        {error, Reason} ->
+          error(Reason);
+        _ -> 
+          case file:write_file_info(Destination, FileInfo) of
+            ok -> ok;
             {error, Reason} ->
               error(Reason)
           end
@@ -129,6 +160,7 @@ copy_recursive(Source, Destination) ->
     {error, Reason} ->
       error(Reason)
   end.
+
 
 %% @doc
 %% @end
