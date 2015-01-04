@@ -115,7 +115,7 @@ copy(Source, Destination, Options) ->
                   end,
                   SubFiles = sub_files(Source),
                   SubFiles1 = case lists:keyfind(exclude, 1, Options) of
-                                {exclude, []} -> SubFiles;
+                                false -> SubFiles;
                                 {exclude, ExcludedFiles} ->
                                   elists:delete_if(
                                     fun(File) ->
@@ -126,7 +126,7 @@ copy(Source, Destination, Options) ->
                                     end, SubFiles)
                               end,
                   SubFiles2 = case lists:keyfind(only, 1, Options) of
-                                {only, []} ->
+                                false ->
                                   SubFiles1;
                                 {only, OnlyFiles} ->
                                   elists:delete_if(
