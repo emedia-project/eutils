@@ -119,13 +119,13 @@ copy(Source, Destination, Options) ->
                                 fun(File) ->
                                     lists:any(
                                       fun(Exclude) ->
-                                          string:str(expand_path(File), Exclude) > 0
+                                          string:str(expand_path(File), Exclude) =/= 0
                                       end, ExcludedFiles)
                                 end, SubFiles),
                   OnlyFiles = elists:keyfind(only, 1, Options, []),
                   SubFiles2 = elists:delete_if(
                                 fun(File) ->
-                                    lists:any(
+                                    lists:all(
                                       fun(Only) ->
                                           string:str(expand_path(File), Only) =:= 0
                                       end, OnlyFiles)
