@@ -163,7 +163,7 @@ realpath(Path) ->
 wildcard(Path, Exclude) ->
   elists:delete_if(fun(P) ->
                        lists:any(fun(E) ->
-                                     string:str(expand_path(P), expand_path(E)) > 0
+                                     string:str(expand_path(P), E) > 0
                                  end, Exclude)
                    end, filelib:wildcard(Path)).
 
