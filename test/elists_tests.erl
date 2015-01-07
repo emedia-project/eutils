@@ -10,7 +10,8 @@ elists_test_() ->
       ?_test(t_identical()),
       ?_test(t_merge_keylists()),
       ?_test(t_keylistmap()),
-      ?_test(t_delete_if())
+      ?_test(t_delete_if()),
+      ?_test(t_keymatch())
    ]}.
 
 setup() ->
@@ -58,3 +59,9 @@ t_delete_if() ->
   ?assertMatch([1,2,3], elists:delete_if(fun(E) ->
                                              E > 3
                                          end, [1,4,2,5,3,6,7,8])).
+t_keymatch() ->
+  ?assertMatch([{toto, tata, titi}],
+               elists:keymatch(
+                 {toto, titi}, 
+                 {1, 3}, 
+                 [{a, b, c}, {a, b}, {toto, tata, titi}])).

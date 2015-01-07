@@ -5,6 +5,7 @@
   merge_keylists/3,
   keyfind/3,
   keyfind/4,
+  keymatch/3,
   keylistmap/2,
   keyfindlast/3,
   keyfindlast/4,
@@ -134,6 +135,31 @@ keyfindlast(Keys, N, List) when is_list(Keys) ->
 %% @end
 keyfindlast(Keys, N, List, Default) when is_list(Keys) ->
   keyfindfirst(lists:reverse(Keys), N, List, Default).
+
+%% @doc
+%% @end
+keymatch(Tuple, N, List) when is_tuple(Tuple), is_tuple(N), is_list(List) ->
+  keymatch(
+    fun(E, T) ->
+        {_, Result} = lists:foldl(
+                        fun(I, {I1, Res}) ->
+                            Res1 = case tuple_size(E) >= tuple_size(T) of
+                                     true ->
+                                       Res andalso element(I1, T) =:= element(I, E);
+                                     false -> Res and false
+                                   end,
+                            {I1 + 1, Res1} 
+                        end, {1, true}, eutils:to_list(N)),
+        Result
+    end, Tuple, List);
+keymatch(Fun, Tuple, List) when is_tuple(Tuple), is_function(Fun), is_list(List) ->
+  lists:foldl(fun(Element, Acc) ->
+                  case Fun(Element, Tuple) of
+                    true -> [Element|Acc];
+                    false -> Acc
+                  end
+              end, [], List).
+
 
 %% @doc
 %% Return true if the two given lists are identical

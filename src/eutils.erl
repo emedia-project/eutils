@@ -50,6 +50,8 @@ to_list(V) when is_float(V) ->
   float_to_list(V);
 to_list(V) when is_binary(V); is_bitstring(V) ->
   binary_to_list(V);
+to_list(V) when is_tuple(V) ->
+  [element(I, V) || I <- lists:seq(1, tuple_size(V))];
 to_list(true) ->
   "true";
 to_list(false) ->
