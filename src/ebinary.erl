@@ -1,6 +1,7 @@
 -module(ebinary).
 
 -export([
+  to_upper/1,
   to_num/1,
   sub/3,
   gsub/3,
@@ -11,6 +12,9 @@
   repeat/2,
   remove_accents/1
   ]).
+
+to_upper(B) ->
+  eutils:to_binary(string:to_upper(eutils:to_string(B))).
 
 remove_accents(B) ->
   eutils:to_binary(estring:remove_accents(eutils:to_string(B))).
