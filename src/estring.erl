@@ -9,8 +9,24 @@
   gsub/3,
   split_first/2,
   repeat/2,
-  quote/1
+  quote/1,
+  remove_accents/1
   ]).
+
+remove_accents(S0) ->
+  S1 = re:replace(S0, "[áàâãä]","a", [global, {return, list}]),
+  S2 = re:replace(S1, "[éèêë]","e", [global, {return, list}]),
+  S3 = re:replace(S2, "[íìîï]","i", [global, {return, list}]),
+  S4 = re:replace(S3, "[óòôõö]","o", [global, {return, list}]),
+  S5 = re:replace(S4, "[úùûü]","u", [global, {return, list}]),
+  S6 = re:replace(S5, "ç","c", [global, {return, list}]),
+  S7 = re:replace(S6, "[ÁÀÂÃÄ]","A", [global, {return, list}]),
+  S8 = re:replace(S7, "[ÉÈÊË]","E", [global, {return, list}]),
+  S9 = re:replace(S8, "[ÍÌÎÏ]","I", [global, {return, list}]),
+  SA = re:replace(S9, "[ÓÒÔÕÖ]","O", [global, {return, list}]),
+  SB = re:replace(SA, "[ÚÙÛÜ]","U", [global, {return, list}]),
+  re:replace(SB, "Ç","C", [global, {return, list}]).
+
 
 %% @doc
 %% @end

@@ -8,8 +8,12 @@
   join/2,
   do_as_list/2,
   do_as_list/3,
-  repeat/2
+  repeat/2,
+  remove_accents/1
   ]).
+
+remove_accents(B) ->
+  eutils:to_binary(estring:remove_accents(eutils:to_string(B))).
 
 %% @doc
 %% Return the number corresponding to the given binary

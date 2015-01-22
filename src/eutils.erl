@@ -3,6 +3,7 @@
 -export([
   to_atom/1,
   to_list/1,
+  to_string/1,
   to_binary/1,
   to_integer/1,
   module_exist/1,
@@ -56,6 +57,12 @@ to_list(true) ->
   "true";
 to_list(false) ->
   "false".
+
+%% @doc
+%% Convert the given term to string
+%% @end
+to_string(V) ->
+  lists:flatten(to_list(V)).
 
 %% @doc
 %% Convert the given term to binary
