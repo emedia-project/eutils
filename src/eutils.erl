@@ -124,5 +124,5 @@ module_exist(Module) ->
   end.
 
 is_string(V) when is_list(V) ->
-  lists:all(fun is_integer/1, V);
+  io_lib:printable_list(V) orelse io_lib:printable_latin1_list(V) orelse io_lib:printable_unicode_list(V);
 is_string(_) -> false.
