@@ -13,6 +13,7 @@
   keyfindfirst/4,
   identical/2,
   include/2,
+  include_list/2,
   delete_if/2,
   fmax/2,
   index_of/2
@@ -175,6 +176,15 @@ identical(List1, List2) when is_list(List1), is_list(List2) ->
 %% @end
 include(List, E) when is_list(List) ->
   lists:any(fun(Elem) -> Elem =:= E end, List).
+
+%% @doc
+%% Return true if all element in IncList are in List
+%% @end
+include_list(List, IncList) when is_list(List), is_list(IncList) ->
+  lists:all(fun(Inc) ->
+                include(List, Inc)
+            end, IncList).
+
 
 %% @doc
 %% @end
