@@ -10,7 +10,8 @@ estring_test_() ->
       ?_test(t_to_num()),
       ?_test(t_sub()),
       ?_test(t_gsub()),
-      ?_test(t_quote())
+      ?_test(t_quote()),
+      ?_test(t_random())
    ]}.
 
 setup() ->
@@ -43,3 +44,10 @@ t_gsub() ->
 
 t_quote() ->
   ?assertEqual("\"toto\\\"titi\"", estring:quote("toto\"titi")).
+
+t_random() ->
+  R1 = estring:random(10),
+  R2 = estring:random(10),
+  ?assertEqual(10, length(R1)),
+  ?assertEqual(10, length(R2)),
+  ?assertNotMatch(R1, R2).

@@ -10,7 +10,8 @@
   split_first/2,
   repeat/2,
   quote/1,
-  remove_accents/1
+  remove_accents/1,
+  random/1
   ]).
 
 remove_accents(S0) ->
@@ -175,3 +176,20 @@ repeat(X, N) ->
 quote(Str) ->
   "\"" ++ gsub(Str, "\"", "\\\"") ++ "\"".
 
+%% @doc
+%% @end
+random(Size) ->
+  random(
+    lists:flatten([X || X <- eutils:to_string(base64:encode(crypto:strong_rand_bytes(Size))), is_alphanum(X)]),
+    Size).
+random(Str, Size) when length(Str) >= Size -> 
+  string:left(Str, Size);
+random(Str, Size) ->
+  random(
+    lists:flatten(Str ++ [X || X <- eutils:to_string(base64:encode(crypto:strong_rand_bytes(Size - length(Str)))), is_alphanum(X)]),
+    Size).
+
+is_alphanum(C) when C >= 16#30 andalso C =< 16#39 -> true;
+is_alphanum(C) when C >= 16#41 andalso C =< 16#5A -> true;
+is_alphanum(C) when C >= 16#61 andalso C =< 16#7A -> true;
+is_alphanum(_) -> false.
