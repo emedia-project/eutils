@@ -2,6 +2,8 @@
 deps
 ebin
 log
+*.o
+*.so
 *.beam
 *.mnesia
 *.txt*

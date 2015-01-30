@@ -30,6 +30,9 @@
 -export([format/1, format/2]).
 -export([parse/1, parse/2]).
 -export([nparse/1]).
+-export([local_timezone/0]).
+
+-on_load(init/0).
 
 %% These are used exclusively as guards and so the function like
 %% defines make sense
@@ -63,6 +66,28 @@
 %%
 %% EXPORTS
 %%
+
+%% @hidden
+-define(nif_stub, nif_stub_error(?LINE)).
+%% @hidden
+nif_stub_error(Line) ->
+  erlang:nif_error({nif_not_loaded,module,?MODULE,line,Line}).
+%% @hidden
+init() ->
+  PrivDir = case code:priv_dir(?MODULE) of
+              {error, bad_name} ->
+                EbinDir = filename:dirname(code:which(?MODULE)),
+                AppPath = filename:dirname(EbinDir),
+                filename:join(AppPath, "priv");
+              Path ->
+                Path
+            end,
+  erlang:load_nif(filename:join(PrivDir, ?MODULE), 0). 
+
+%% @doc
+%% @end
+local_timezone() ->
+  ?nif_stub.
 
 %% @spec add(datetime(), integer(), atom()) -> datetime()
 add(DateTime, N, seconds) ->
@@ -120,7 +145,7 @@ yesterday() -> add(today(), -1).
 
 %% @doc return date using iso8601 format
 to_iso8601(Date) ->
-    format("Y-m-dTH:i:s", Date).
+    format("Y-m-dTH:i:s", Date) ++ local_timezone().
 
 -spec format(string()) -> string().
 %% @doc format current local time as Format
