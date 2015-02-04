@@ -6,6 +6,7 @@
   user_home/0,
   make_dir/1,
   remove_recursive/1,
+  copy/2,
   copy/3,
   copyfile/2,
   relative_from/2,
@@ -92,6 +93,10 @@ remove_recursive(Path) ->
       lists:foreach(fun remove_recursive/1, sub_files(Path)),
       file:del_dir(Path)
   end.
+
+%% @equiv copy(Source, Destination, [])
+copy(Source, Destination) ->
+  copy(Source, Destination, []).
 
 %% @doc
 %% @end
