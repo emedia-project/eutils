@@ -6,14 +6,14 @@
 #include "nif_helpers.h"
 
 NIF(nif_local_timezone) {
-  char tz[6];
+  char tz[7];
   time_t currentTime = time(NULL);
   struct tm *localTime;
   localTime = localtime(&currentTime);
   long absDiff = abs(localTime->tm_gmtoff);
   long hour = absDiff/60/60;
   long min = (absDiff - (hour*60*60))/60;
-  memset(tz, 0, 6);
+  memset(tz, 0, 7);
 
   if(localTime->tm_gmtoff >= 0) {
     sprintf(tz, "+%02ld:%02ld", hour, min);
