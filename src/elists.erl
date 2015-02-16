@@ -11,6 +11,7 @@
   keyfindlast/4,
   keyfindfirst/3,
   keyfindfirst/4,
+  keysdelete/3,
   identical/2,
   include/2,
   include_list/2,
@@ -125,6 +126,13 @@ keyfindfirst([Key|Keys], N, List, Default) ->
     {Key, Value} -> {Key, Value};
     _ -> keyfindfirst(Keys, N, List, Default)
   end.
+
+%% @doc
+%% @end
+keysdelete(Keys, N, List) ->
+  lists:foldl(fun(Key, Acc) ->
+                  lists:keydelete(Key, N, Acc)
+              end, List, Keys).
 
 %% @doc
 %% Same as elists:keyfindlast/4 where Default = undefined
