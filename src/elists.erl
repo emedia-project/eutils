@@ -5,6 +5,8 @@
   merge_keylists/3,
   keyfind/3,
   keyfind/4,
+  keysearch/2,
+  keysearch/3,
   keymatch/3,
   keylistmap/2,
   keyfindlast/3,
@@ -133,6 +135,21 @@ keysdelete(Keys, N, List) ->
   lists:foldl(fun(Key, Acc) ->
                   lists:keydelete(Key, N, Acc)
               end, List, Keys).
+
+%% @doc
+%% @end
+keysearch(Fun, List) -> 
+  keysearch(Fun, List, undefined).
+
+%% @doc
+%% @end
+keysearch(_, [], Default) -> Default;
+keysearch(Fun, [E|List], Default) ->
+  case Fun(E) of
+    true -> E;
+    false -> keysearch(Fun, List, Default)
+  end.
+
 
 %% @doc
 %% Same as elists:keyfindlast/4 where Default = undefined
