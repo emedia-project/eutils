@@ -11,7 +11,8 @@
   repeat/2,
   quote/1,
   remove_accents/1,
-  random/1
+  random/1,
+  capitalize/1
   ]).
 
 remove_accents(S0) ->
@@ -188,6 +189,12 @@ random(Str, Size) ->
   random(
     lists:flatten(Str ++ [X || X <- eutils:to_string(base64:encode(crypto:strong_rand_bytes(Size - length(Str)))), is_alphanum(X)]),
     Size).
+
+%% @doc
+%% @end
+capitalize(S) ->
+  F = fun([H|T]) -> [string:to_upper(H) | string:to_lower(T)] end,
+  string:join(lists:map(F, string:tokens(S, " ")), " ").
 
 is_alphanum(C) when C >= 16#30 andalso C =< 16#39 -> true;
 is_alphanum(C) when C >= 16#41 andalso C =< 16#5A -> true;
