@@ -27,6 +27,7 @@
 -export([to_iso8601/1]).
 -export([add/2, add/3]).
 -export([today/0, yesterday/0, tomorrow/0]).
+-export([compare/2]).
 -export([format/1, format/2]).
 -export([parse/1, parse/2]).
 -export([nparse/1]).
@@ -71,23 +72,23 @@
 -define(nif_stub, nif_stub_error(?LINE)).
 %% @hidden
 nif_stub_error(Line) ->
-  erlang:nif_error({nif_not_loaded,module,?MODULE,line,Line}).
+    erlang:nif_error({nif_not_loaded,module,?MODULE,line,Line}).
 %% @hidden
 init() ->
-  PrivDir = case code:priv_dir(?MODULE) of
-              {error, bad_name} ->
-                EbinDir = filename:dirname(code:which(?MODULE)),
-                AppPath = filename:dirname(EbinDir),
-                filename:join(AppPath, "priv");
-              Path ->
-                Path
-            end,
-  erlang:load_nif(filename:join(PrivDir, ?MODULE), 0). 
+    PrivDir = case code:priv_dir(?MODULE) of
+                  {error, bad_name} ->
+                      EbinDir = filename:dirname(code:which(?MODULE)),
+                      AppPath = filename:dirname(EbinDir),
+                      filename:join(AppPath, "priv");
+                  Path ->
+                      Path
+              end,
+    erlang:load_nif(filename:join(PrivDir, ?MODULE), 0). 
 
 %% @doc
 %% @end
 local_timezone() ->
-  ?nif_stub.
+    ?nif_stub.
 
 %% @spec add(datetime(), integer(), atom()) -> datetime()
 add(DateTime, N, seconds) ->
@@ -104,8 +105,8 @@ add(DateTime, N, weeks) ->
     add(DateTime, 7*N, days);
 add({{YYYY, MM, DD}=Date, Time}, 0, months) ->
     case calendar:valid_date(Date) of
-    true  -> {Date, Time};
-    false -> add({{YYYY, MM, DD-1}, Time}, 0, months)
+        true  -> {Date, Time};
+        false -> add({{YYYY, MM, DD-1}, Time}, 0, months)
     end;
 add({{YYYY, MM, DD}, Time}, N, months) when N > 0 andalso MM < 12 ->
     add({{YYYY, MM+1, DD}, Time}, N-1, months);
@@ -142,6 +143,15 @@ today() -> erlang:localtime().
 tomorrow() -> add(today(), 1).
 %% @spec yesterday() -> datetime()
 yesterday() -> add(today(), -1).
+
+compare(Date1, Date2) ->
+    SecDate1 = calendar:datetime_to_gregorian_seconds(Date1),
+    SecDate2 = calendar:datetime_to_gregorian_seconds(Date2),
+    if
+        SecDate1 > SecDate2 -> -1;
+        SecDate2 > SecDate1 -> 1;
+        true -> 0
+    end.
 
 %% @doc return date using iso8601 format
 to_iso8601(Date) ->
@@ -602,7 +612,7 @@ format([$f|T], {_,{_,_,_,Ms}}=Dt, Acc) ->
 %% Whole Dates
 format([$c|T], {{Y,M,D},{H,Min,S}}=Dt, Acc) ->
     Format = "~4.10.0B-~2.10.0B-~2.10.0B"
-        ++" ~2.10.0B:~2.10.0B:~2.10.0B",
+    ++" ~2.10.0B:~2.10.0B:~2.10.0B",
     Date = io_lib:format(Format, [Y, M, D, H, Min, S]),
     format(T, Dt, [Date|Acc]);
 format([$r|T], {{Y,M,D},{H,Min,S}}=Dt, Acc) ->
@@ -612,7 +622,7 @@ format([$r|T], {{Y,M,D},{H,Min,S}}=Dt, Acc) ->
 format([$U|T], Dt, Acc) ->
     Epoch = {{1970,1,1},{0,0,0}},
     Time = calendar:datetime_to_gregorian_seconds(Dt) -
-        calendar:datetime_to_gregorian_seconds(Epoch),
+    calendar:datetime_to_gregorian_seconds(Epoch),
     format(T, Dt, [itol(Time)|Acc]);
 
 %% Unrecognised, print as is
@@ -624,7 +634,7 @@ format([H|T], Date, Acc) ->
 -spec days_in_year(date()) -> integer().
 days_in_year({Y,_,_}=Date) ->
     calendar:date_to_gregorian_days(Date) -
-        calendar:date_to_gregorian_days({Y,1,1}).
+    calendar:date_to_gregorian_days({Y,1,1}).
 
 %% @doc is a leap year
 -spec is_leap(year()) -> 1|0.
@@ -714,7 +724,7 @@ month(12) -> "December".
 iso_week(Date) ->
     Week = iso_week_one(iso_year(Date)),
     Days = calendar:date_to_gregorian_days(Date) -
-        calendar:date_to_gregorian_days(Week),
+    calendar:date_to_gregorian_days(Week),
     trunc((Days / 7) + 1).
 
 -spec iso_year(date()) -> integer().
