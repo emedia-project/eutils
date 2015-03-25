@@ -80,6 +80,7 @@ concat(List) when is_list(List) ->
 %% &lt;&lt;"toto-tata-titi"&gt:&gt; = ebinary:join([&lt;&lt;"toto"&gt;&gt;, &lt;&lt;"tata"&gt;&gt;, &lt;&lt;"titi"&gt;&gt;], &lt;&lt;"-"&gt;&gt;).
 %% </pre>
 %% @end
+join([], _) -> <<>>;
 join([First|Rest], Sep) ->
   F = fun(A, B) ->
           Ab = eutils:to_binary(A),
