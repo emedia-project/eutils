@@ -6,6 +6,7 @@
   to_string/1,
   to_binary/1,
   to_integer/1,
+  to_float/1,
   module_exist/1,
   is_string/1,
   compare_as_list/2,
@@ -112,6 +113,32 @@ to_integer(I) when is_float(I) ->
   to_integer(float_to_list(I, [{decimals, 0}])).
 
 %% @doc
+%% Convert the given term to float
+%%
+%% Example
+%%<pre>
+%% 123.45 = eutils:to_float(123.45).
+%% 123.45 = eutils:to_float("123.45").
+%% 123.45 = eutils:to_float(<<"123.45">>).
+%% 123.45 = eutils:to_float('123.45').
+%% 123.0 = eutils:to_float(123).
+%% </pre<
+%% @end
+to_float(Value) when is_integer(Value) ->
+  float(Value);
+to_float(Value) when is_float(Value) ->
+  Value;
+to_float(Value) when is_list(Value) ->
+  case string:to_float(Value) of
+    {error, no_float} -> float(list_to_integer(Value));
+    {F, _} -> F
+  end;
+to_float(Value) when is_binary(Value) ->
+  to_float(binary_to_list(Value));
+to_float(Value) when is_atom(Value) ->
+  to_float(atom_to_list(Value)).
+
+%% @doc
 %% Check if the given module exist
 %% @end
 module_exist(Module) ->
@@ -149,7 +176,7 @@ compare_as_binary(V1, V2) ->
 compare_as(Fun, V1, V2) ->
   V11 = Fun(V1),
   V21 = Fun(V2),
-  if 
+  if
     V11 < V21 -> -1;
     V11 =:= V21 -> 0;
     true -> 1
