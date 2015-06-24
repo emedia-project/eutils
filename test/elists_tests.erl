@@ -11,7 +11,8 @@ elists_test_() ->
       ?_test(t_merge_keylists()),
       ?_test(t_keylistmap()),
       ?_test(t_delete_if()),
-      ?_test(t_keymatch())
+      ?_test(t_keymatch()),
+      ?_test(t_keyfindm())
    ]}.
 
 setup() ->
@@ -65,3 +66,35 @@ t_keymatch() ->
                  {toto, titi}, 
                  {1, 3}, 
                  [{a, b, c}, {a, b}, {toto, tata, titi}])).
+
+t_keyfindm() ->
+  ?assertMatch({a, b, c, d},
+               elists:keyfindm([{a, 1}, {d, 4}],
+                               [
+                                {a, b, c, e},
+                                {a, b, c, f},
+                                {a, b, c, g},
+                                {a, b, c, d},
+                                {a, b, c, h}
+                               ],
+                              undefined)),
+  ?assertMatch(false,
+               elists:keyfindm([{a, 1}, {j, 4}],
+                               [
+                                {a, b, c, e},
+                                {a, b, c, f},
+                                {a, b, c, g},
+                                {a, b, c, h},
+                                {a, b, c, i}
+                               ])),
+  ?assertMatch({x, y, z, a},
+               elists:keyfindm([{a, 1}, {d, 4}],
+                               [
+                                {a, b, c, e},
+                                {a, b, c, f},
+                                {a, b, c, g},
+                                {a, b, c, h},
+                                {a, b, c, i}
+                               ],
+                               {x, y, z, a})).
+

@@ -5,6 +5,8 @@
   merge_keylists/3,
   keyfind/3,
   keyfind/4,
+  keyfindm/2,
+  keyfindm/3,
   keysearch/2,
   keysearch/3,
   keymatch/3,
@@ -65,6 +67,27 @@ merge_keylists(N, [Tuple|Rest], TupleList2) when
 %% @hidden
 keyfind(Key, N, List) ->
   keyfind(Key, N, List, false).
+
+%% @doc
+%% @end
+keyfindm(Keys, List) ->
+  keyfindm(Keys, List, false).
+
+%% @doc
+%% @end
+keyfindm(_, [], Default) -> Default;
+keyfindm(Keys, [Tuple|Rest], Default) ->
+  case lists:all(fun({Key, N}) ->
+                     if
+                       size(Tuple) >= N, element(N, Tuple) =:= Key ->
+                         true;
+                       true -> 
+                         false
+                     end
+                 end, Keys) of
+    true -> Tuple;
+    false -> keyfindm(Keys, Rest, Default)
+  end.
 
 %% @doc
 %% Extended keylistmap for tuple list
@@ -200,7 +223,7 @@ identical(List1, List2) when is_list(List1), is_list(List2) ->
 %% Return true if E is in List
 %% @end
 include(List, E) when is_list(List) ->
-  lists:any(fun(Elem) -> Elem =:= E end, List).
+  lists:member(E, List).
 
 %% @doc
 %% Return true if all element in IncList are in List
