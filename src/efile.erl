@@ -79,6 +79,8 @@ user_home() ->
 %% @doc
 %% Create the given directory if it not exist
 %% @end
+make_dir(Path) when is_binary(Path) ->
+  ebinary:do_as_list(?MODULE, make_dir, Path);
 make_dir(Path) ->
   filelib:ensure_dir(filename:join([Path, "."])).
 
