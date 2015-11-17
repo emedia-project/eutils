@@ -80,15 +80,19 @@ concat(List) when is_list(List) ->
 %% &lt;&lt;"toto-tata-titi"&gt:&gt; = ebinary:join([&lt;&lt;"toto"&gt;&gt;, &lt;&lt;"tata"&gt;&gt;, &lt;&lt;"titi"&gt;&gt;], &lt;&lt;"-"&gt;&gt;).
 %% </pre>
 %% @end
-join([], _) -> <<>>;
-join([First|Rest], Sep) ->
-  F = fun(A, B) ->
-          Ab = eutils:to_binary(A),
-          Bb = eutils:to_binary(B),
-          S = eutils:to_binary(Sep),
-          <<Ab/binary, S/binary, Bb/binary>>
-      end,
-  lists:foldr(F, First, Rest).
+join([], _) ->
+  <<>>;
+join([Bin], _) when is_binary(Bin) ->
+  Bin;
+join(List, Sep) when is_list(List), is_binary(Sep) ->
+  lists:foldr(fun
+                (<<>>, <<>>) -> <<>>;
+                (A, <<>>) -> A;
+                (<<>>, B) -> B;
+                (A, B) -> <<A/binary, Sep/binary, B/binary>>
+              end, <<>>, List);
+join(Bin, _) when is_binary(Bin) ->
+  Bin.
 
 %% @hidden
 do_as_list(Fun, Binary) when is_function(Fun), is_binary(Binary) ->
