@@ -75,15 +75,7 @@ nif_stub_error(Line) ->
     erlang:nif_error({nif_not_loaded,module,?MODULE,line,Line}).
 %% @hidden
 init() ->
-    PrivDir = case code:priv_dir(?MODULE) of
-                  {error, bad_name} ->
-                      EbinDir = filename:dirname(code:which(?MODULE)),
-                      AppPath = filename:dirname(EbinDir),
-                      filename:join(AppPath, "priv");
-                  Path ->
-                      Path
-              end,
-    erlang:load_nif(filename:join(PrivDir, ?MODULE), 0). 
+    erlang:load_nif(filename:join(ecode:priv_dir(?MODULE), ?MODULE), 0). 
 
 %% @doc
 %% @end
