@@ -1,7 +1,8 @@
 -module(exml).
 -export([
          export/1,
-         export/2
+         export/2,
+         import/1
         ]).
 
 -define(XML_PROLOG, <<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>">>).
@@ -26,6 +27,41 @@ export(X, Options) when is_tuple(X), is_list(Options) ->
     #{format := true, prolog := Prolog} -> <<Prolog/binary, "\n", XML/binary>>;
     #{prolog := Prolog} -> <<Prolog/binary, XML/binary>>
   end.
+
+import(X) when is_list(X) ->
+  import(eutils:to_binary(X));
+import(X) when is_binary(X) ->
+  tokenize(X).
+
+%% Private (for import)
+
+-define(m(X,B),<<X,B/binary>>). % match
+-define(d(X,B),<<X:8/integer,B/binary>>). % decompose
+-define(M(X,B),<<X,_/binary>> = B). % match
+-define(D(X,B),<<X:8/integer,_/binary>> = B). % decompose
+
+-define(ok(X),$a=<X,X=<$z;$A=<X,X=<$Z;$0=<X,X=<$9;X==$_;X==$-;X==$:).
+-define(ws(X),X==$\s;X==$\r;X==$\n;X==$\t).
+-define(dq(X),X==$").
+-define(sq(X),X==$').
+
+-define(ev(X), ?ws(X); X==$>; X==$=).
+
+tokenize(X) -> tokenize(X, []).
+tokenize(<<>>, Acc) -> Acc;
+%tokenize({tag, Rest}, Acc) ->
+
+tokenize(X, Acc) ->
+  tokenize(token(X), Acc).
+
+token(?m("<", Str)) -> {tag, word(Str)};
+token(?d(_,Str)) -> Str.
+
+word({Type, ?d(X, Str)}) when ?ws(X) -> word({Type, Str});
+word(X) -> X.
+
+
+%% Private (for export)
 
 xml_node({}, _) -> <<"">>;
 xml_node({Tag}, Options) ->
