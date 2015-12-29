@@ -62,7 +62,10 @@ merge_keylists(N, [Tuple|Rest], TupleList2) when
     {value, _} -> lists:keydelete(Key, N, TupleList2);
     false -> TupleList2
   end,
-  merge_keylists(N, Rest, TupleList3 ++ [Tuple]).
+  merge_keylists(N, Rest, TupleList3 ++ [Tuple]);
+merge_keylists(N, [Tuple|Rest], TupleList2) when 
+    is_integer(N), is_list(TupleList2), is_list(Rest)->
+  merge_keylists(N, Rest, TupleList2 ++ [Tuple]).
 
 %% @hidden
 keyfind(Key, N, List) ->
