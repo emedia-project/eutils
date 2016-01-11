@@ -8,6 +8,7 @@ efile_test_() ->
    [
       ?_test(t_realpath())
       , ?_test(t_realtive_from())
+      , ?_test(t_match())
    ]}.
 
 setup() ->
@@ -52,4 +53,18 @@ t_realtive_from() ->
   ?assertEqual("../titi/file.txt" , efile:relative_from("/toto/titi/file.txt", "/toto/tutu")),
   ?assertEqual("../titi/file.txt" , efile:relative_from("toto/titi/file.txt", "toto/tutu")),
   ?assertEqual("../../toto/titi/file.txt" , efile:relative_from("/toto/titi/file.txt", "/tata/tutu")).
+
+t_match() ->
+  ?assert(efile:match("a/b/c", "**/b/**")),
+  ?assert(efile:match("a/b/c", "*/b/*")),
+  ?assert(efile:match("a/b/c", "**/b/*")),
+  ?assert(efile:match("a/b/c", "*/b/**")),
+  ?assert(efile:match("a/b/c/x", "**/b/**")),
+  ?assert(efile:match("a/b/c/x", "*/b/**")),
+  ?assert(efile:match("a/b/c/x", "*/b/**")),
+  ?assertEqual(false, efile:match("a/b/c/x", "*/b/*")),
+  ?assertEqual(false, efile:match("a/b/c/x", "**/b/*")),
+  ?assertEqual(false, efile:match("a/b/c", "b")),
+  ?assert(efile:match("a/.b/c", "**/.b/**")),
+  ?assertEqual(false, efile:match("a/xb/c", "**/.b/**")).
 

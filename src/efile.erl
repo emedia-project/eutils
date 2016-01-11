@@ -11,7 +11,8 @@
   copyfile/2,
   relative_from/2,
   realpath/1,
-  wildcard/2
+  wildcard/2,
+  match/2
   ]).
 
 %% @doc
@@ -205,13 +206,29 @@ realpath(Path) ->
   ).
 
 %% @doc
+%% Same as <tt>filelib:wildcard/1</tt> but where files listed in <tt>Exclude</tt> are excluded.
 %% @end
 wildcard(Path, Exclude) ->
-  elists:delete_if(fun(P) ->
-                       lists:any(fun(E) ->
-                                     string:str(expand_path(P), E) > 0
-                                 end, Exclude)
-                   end, filelib:wildcard(Path)).
+  elists:delete_if(
+    fun(P) ->
+        lists:any(
+          fun(E) ->
+              match(P, E)
+          end, Exclude)
+    end, filelib:wildcard(Path)).
+
+%% @doc
+%% @end
+match(Path, Exp) ->
+  Exp1 = estring:gsub(Exp, ".", "\\."),
+  Exp2 = estring:gsub(Exp1, "*", "[^/]*"),
+  Exp3 = estring:gsub(Exp2, "[^/]*[^/]*", ".*"),
+  Exp4 = "^" ++ Exp3 ++ "$",
+  case re:run(Path, Exp4) of
+    nomatch -> false;
+    _ -> true
+  end.
+
 
 % private
 
