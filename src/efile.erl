@@ -213,7 +213,7 @@ wildcard(Path, Exclude) ->
     fun(P) ->
         lists:any(
           fun(E) ->
-              match(P, E)
+              not match(P, E)
           end, Exclude)
     end, filelib:wildcard(Path)).
 
